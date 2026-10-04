@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans bg-sand-50 text-forest-950 antialiased;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+    line-height: 1.2;
+  }
+
+  ::selection {
+    @apply bg-gold-300 text-forest-950;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply max-w-7xl mx-auto px-5 sm:px-8 lg:px-12;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-gold-gradient text-forest-950 font-semibold text-sm tracking-wide shadow-gold transition-all duration-300 hover:scale-[1.03] hover:shadow-lg active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border-2 border-gold-300/60 text-gold-100 font-semibold text-sm tracking-wide transition-all duration-300 hover:bg-gold-300 hover:text-forest-950 hover:border-gold-300 active:scale-95;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border-2 border-forest-700/30 text-forest-800 font-semibold text-sm tracking-wide transition-all duration-300 hover:bg-forest-800 hover:text-white hover:border-forest-800 active:scale-95;
+  }
+
+  .section-eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold-600;
+  }
+
+  .card-hover {
+    @apply transition-all duration-500 hover:-translate-y-1.5 hover:shadow-card;
+  }
+
+  .link-underline {
+    @apply relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-gold-400 after:transition-all after:duration-300 hover:after:w-full;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-delay-100 { animation-delay: 0.1s; opacity: 0; }
+  .animate-delay-200 { animation-delay: 0.2s; opacity: 0; }
+  .animate-delay-300 { animation-delay: 0.3s; opacity: 0; }
+  .animate-delay-400 { animation-delay: 0.4s; opacity: 0; }
+  .animate-delay-500 { animation-delay: 0.5s; opacity: 0; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f2eee6;
+}
+::-webkit-scrollbar-thumb {
+  background: #256b48;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #19432e;
+}

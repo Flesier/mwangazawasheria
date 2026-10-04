@@ -1,0 +1,2 @@
+[functions.submit-book-order]
+verify_jwt = false
