@@ -60,13 +60,22 @@ Deno.serve(async (request: Request) => {
 
   try {
     const body: unknown = await request.json();
+    console.log('Received request body:', JSON.stringify(body));
+    
     if (!isBookOrder(body) || !body.full_name.trim() || !body.email.includes('@')) {
+      console.error('Validation failed for body:', JSON.stringify(body));
       return new Response(JSON.stringify({ error: 'Please provide valid request details.' }), { status: 400, headers: jsonHeaders });
     }
 
+    console.log('Inserting into book_orders...');
     const { error: insertError } = await supabase.from('book_orders').insert(body);
-    if (insertError) throw insertError;
+    if (insertError) {
+      console.error('Database insert error:', JSON.stringify(insertError));
+      throw insertError;
+    }
+    console.log('Database insert successful');
 
+    console.log('Sending email via Resend...');
     const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -100,6 +109,7 @@ Deno.serve(async (request: Request) => {
       console.error('Resend rejected the notification:', resendError);
       return new Response(JSON.stringify({ error: 'The request was saved, but the email notification could not be delivered. Please verify the sending domain in Resend.' }), { status: 502, headers: jsonHeaders });
     }
+    console.log('Email sent successfully');
 
     return new Response(JSON.stringify({ success: true }), { status: 200, headers: jsonHeaders });
   } catch {
