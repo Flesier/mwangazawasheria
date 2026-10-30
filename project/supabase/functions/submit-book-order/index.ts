@@ -107,12 +107,15 @@ Deno.serve(async (request: Request) => {
     if (!emailResponse.ok) {
       const resendError = await emailResponse.text();
       console.error('Resend rejected the notification:', resendError);
-      return new Response(JSON.stringify({ error: 'The request was saved, but the email notification could not be delivered. Please verify the sending domain in Resend.' }), { status: 502, headers: jsonHeaders });
+      // The order is already safely stored. Treating a notification failure as
+      // a failed order makes the customer retry and can create duplicate orders.
+      return new Response(JSON.stringify({ success: true, notification_sent: false }), { status: 200, headers: jsonHeaders });
     }
     console.log('Email sent successfully');
 
     return new Response(JSON.stringify({ success: true }), { status: 200, headers: jsonHeaders });
-  } catch {
+  } catch (error) {
+    console.error('Book order submission failed:', error);
     return new Response(JSON.stringify({ error: 'We could not submit your request right now.' }), { status: 500, headers: jsonHeaders });
   }
 });
