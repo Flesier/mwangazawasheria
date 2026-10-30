@@ -35,12 +35,12 @@ function isBookOrder(value: unknown): value is BookOrder {
     typeof order.email === 'string' &&
     typeof order.phone === 'string' &&
     typeof order.county === 'string' &&
-    typeof order.address === 'string' &&
+    (order.address === undefined || typeof order.address === 'string') &&
     typeof order.quantity === 'number' &&
     Number.isInteger(order.quantity) &&
     order.quantity > 0 &&
-    typeof order.sponsor_name === 'string' &&
-    typeof order.message === 'string' &&
+    (order.sponsor_name === undefined || typeof order.sponsor_name === 'string') &&
+    (order.message === undefined || typeof order.message === 'string') &&
     typeof order.payer_name === 'string'
   );
 }
