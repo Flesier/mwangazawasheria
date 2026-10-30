@@ -92,7 +92,8 @@ function OrderModal({ type, submitted, onClose, onSubmitted }: { type: OrderType
       const { error: submitError } = await getSupabase().functions.invoke('submit-book-order', { body: request });
       if (submitError) throw submitError;
       onSubmitted();
-    } catch {
+    } catch (error) {
+      console.error('Book order submission failed before receiving a successful response:', error);
       setError('We could not submit your request right now. Please try again or contact us directly.');
     } finally {
       setLoading(false);
