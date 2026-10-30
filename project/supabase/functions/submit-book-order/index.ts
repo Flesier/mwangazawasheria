@@ -14,7 +14,7 @@ const supabase = createClient(
 const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
 
 type BookOrder = {
-  order_type: 'physical' | 'digital' | 'sponsor';
+  order_type: 'physical' | 'sponsor';
   full_name: string;
   email: string;
   phone: string;
@@ -23,13 +23,14 @@ type BookOrder = {
   quantity: number;
   sponsor_name: string;
   message: string;
+  payer_name: string;
 };
 
 function isBookOrder(value: unknown): value is BookOrder {
   if (!value || typeof value !== 'object') return false;
   const order = value as Partial<BookOrder>;
   return (
-    (order.order_type === 'physical' || order.order_type === 'digital' || order.order_type === 'sponsor') &&
+    (order.order_type === 'physical' || order.order_type === 'sponsor') &&
     typeof order.full_name === 'string' &&
     typeof order.email === 'string' &&
     typeof order.phone === 'string' &&
@@ -39,12 +40,13 @@ function isBookOrder(value: unknown): value is BookOrder {
     Number.isInteger(order.quantity) &&
     order.quantity > 0 &&
     typeof order.sponsor_name === 'string' &&
-    typeof order.message === 'string'
+    typeof order.message === 'string' &&
+    typeof order.payer_name === 'string'
   );
 }
 
 function orderLabel(type: BookOrder['order_type']): string {
-  return type === 'physical' ? 'Physical copy' : type === 'digital' ? 'Digital PDF edition' : 'Sponsored copy';
+  return type === 'physical' ? 'Physical copy' : 'Sponsored copy';
 }
 
 Deno.serve(async (request: Request) => {
@@ -87,6 +89,7 @@ Deno.serve(async (request: Request) => {
           `Quantity: ${body.quantity}`,
           body.address && `Delivery address: ${body.address}`,
           body.sponsor_name && `Sponsored copy name: ${body.sponsor_name}`,
+          body.payer_name && `Paid by: ${body.payer_name}`,
           body.message && `Message: ${body.message}`,
         ].filter(Boolean).join('\n'),
       }),

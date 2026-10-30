@@ -1,17 +1,16 @@
 import { useState } from 'react';
-import { BookOpen, Download, Heart, Truck, CheckCircle2, ShieldCheck, ArrowRight, X, Mail, Phone, MapPin, User, Sparkles } from 'lucide-react';
+import { BookOpen, Heart, Truck, CheckCircle2, ShieldCheck, ArrowRight, X, Mail, Phone, MapPin, User, Sparkles, CreditCard } from 'lucide-react';
 import { Link } from '@/lib/router';
 import { IMAGES } from '@/lib/images';
 import { getSupabase } from '@/lib/supabase';
 
-type OrderType = 'physical' | 'digital' | 'sponsor';
+type OrderType = 'physical' | 'sponsor';
 
 const topics = ['Constitutional Framework', 'Bail & Bond', 'Criminal Trial Processes', 'Capital & Non-Capital Offences', 'Sexual Offences', 'ADR, Plea Bargaining & Diversion', 'Civil Litigation Procedures', 'Appeals & Revision Proceedings', 'Sample Legal Drafts'];
 
 const options: { type: OrderType; icon: typeof BookOpen; title: string; description: string; price: string; cta: string }[] = [
-  { type: 'physical', icon: Truck, title: 'Physical Copy', description: 'A durable, full-colour printed manual delivered to your door anywhere in Kenya.', price: 'KES XXX', cta: 'Buy Physical Copy' },
-  { type: 'digital', icon: Download, title: 'Digital PDF Edition', description: 'Instant access to the complete guide, readable on your phone, tablet, or computer.', price: 'KES XXX', cta: 'Download Digital Edition' },
-  { type: 'sponsor', icon: Heart, title: 'Sponsor a Copy', description: 'Put a copy in the hands of an incarcerated defendant or community paralegal.', price: 'KES XXX', cta: 'Sponsor a Copy' },
+  { type: 'physical', icon: Truck, title: 'Physical Copy', description: 'A durable, full-colour printed manual delivered to your door anywhere in Kenya.', price: 'KSH 1000', cta: 'Buy Physical Copy' },
+  { type: 'sponsor', icon: Heart, title: 'Sponsor a Copy', description: 'Put a copy in the hands of an incarcerated defendant or community paralegal.', price: 'KSH 1000', cta: 'Sponsor a Copy' },
 ];
 
 export default function Store() {
@@ -88,6 +87,7 @@ function OrderModal({ type, submitted, onClose, onSubmitted }: { type: OrderType
         quantity: Number(form.get('quantity') || 1),
         sponsor_name: String(form.get('sponsor_name') || ''),
         message: String(form.get('message') || ''),
+        payer_name: String(form.get('payer_name') || ''),
       };
       const { error: submitError } = await getSupabase().functions.invoke('submit-book-order', { body: request });
       if (submitError) throw submitError;
@@ -99,7 +99,87 @@ function OrderModal({ type, submitted, onClose, onSubmitted }: { type: OrderType
     }
   }
 
-  return <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-forest-950/70 backdrop-blur-sm animate-fade-in" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}><div className="bg-sand-50 rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"><div className="sticky top-0 bg-sand-50/95 backdrop-blur-sm p-6 sm:p-8 pb-4 flex items-start justify-between border-b border-sand-200"><div><div className="section-eyebrow mb-2">{type === 'sponsor' ? 'Make an impact' : 'Reserve your copy'}</div><h2 className="text-2xl font-serif font-semibold text-forest-950">{option.title}</h2></div><button onClick={onClose} className="w-9 h-9 rounded-full bg-sand-200/60 flex items-center justify-center hover:bg-sand-300 transition-colors"><X className="w-5 h-5 text-forest-800" /></button></div>{submitted ? <div className="p-8 sm:p-12 text-center"><div className="w-16 h-16 rounded-full bg-forest-100 flex items-center justify-center mx-auto mb-5"><CheckCircle2 className="w-8 h-8 text-forest-600" /></div><h3 className="text-2xl font-serif font-semibold text-forest-950 mb-3">Thank you for your support</h3><p className="text-forest-800/70 leading-relaxed mb-7">We've received your request. Our team will contact you shortly with payment and delivery details.</p><button onClick={onClose} className="btn-primary">Close</button></div> : <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5"><div className="grid grid-cols-1 sm:grid-cols-2 gap-5"><Field name="full_name" label="Full name" icon={User} required /><Field name="email" type="email" label="Email address" icon={Mail} required /></div><div className="grid grid-cols-1 sm:grid-cols-2 gap-5"><Field name="phone" label="Phone number" icon={Phone} required /><Field name="county" label="County" icon={MapPin} required /></div>{type === 'physical' && <><Field name="address" label="Delivery address" icon={MapPin} required /><Field name="quantity" type="number" label="Number of copies" icon={BookOpen} required /></>}{type === 'sponsor' && <><Field name="sponsor_name" label="Name for the sponsored copy (optional)" icon={Heart} /><Field name="quantity" type="number" label="Number of copies to sponsor" icon={BookOpen} required /></>}{type === 'digital' && <Field name="quantity" type="number" label="Number of copies" icon={BookOpen} required />}<div><label className="block text-xs font-semibold uppercase tracking-wider text-forest-800/70 mb-2">Message (optional)</label><textarea name="message" rows={3} className="w-full px-4 py-3 rounded-xl border border-sand-300 bg-white text-sm text-forest-950 outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-200 resize-none" placeholder="Anything you'd like us to know..." /></div>{error && <p className="text-sm text-red-700 bg-red-50 rounded-xl px-4 py-3">{error}</p>}<button type="submit" disabled={loading} className="btn-primary w-full disabled:opacity-60">{loading ? 'Submitting...' : option.cta} <ArrowRight className="w-4 h-4" /></button><p className="text-[11px] text-center text-forest-800/45">Your information is kept confidential and used only to process your request.</p></form>}</div></div>;
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-forest-950/70 backdrop-blur-sm animate-fade-in" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="bg-sand-50 rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-sand-50/95 backdrop-blur-sm p-6 sm:p-8 pb-4 flex items-start justify-between border-b border-sand-200">
+          <div>
+            <div className="section-eyebrow mb-2">{type === 'sponsor' ? 'Make an impact' : 'Reserve your copy'}</div>
+            <h2 className="text-2xl font-serif font-semibold text-forest-950">{option.title}</h2>
+          </div>
+          <button onClick={onClose} className="w-9 h-9 rounded-full bg-sand-200/60 flex items-center justify-center hover:bg-sand-300 transition-colors"><X className="w-5 h-5 text-forest-800" /></button>
+        </div>
+
+        {submitted ? (
+          <div className="p-8 sm:p-12 text-center">
+            <div className="w-16 h-16 rounded-full bg-forest-100 flex items-center justify-center mx-auto mb-5"><CheckCircle2 className="w-8 h-8 text-forest-600" /></div>
+            <h3 className="text-2xl font-serif font-semibold text-forest-950 mb-3">Thank you for your support</h3>
+            <p className="text-forest-800/70 leading-relaxed mb-7">We've received your order and payment confirmation. Our team will process your request and contact you with delivery details.</p>
+            <button onClick={onClose} className="btn-primary">Close</button>
+          </div>
+        ) : (
+          <>
+            <div className="p-6 sm:p-8 pb-6">
+              <div className="bg-gold-50 rounded-2xl p-5 border border-gold-200 mb-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <CreditCard className="w-5 h-5 text-gold-600 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-forest-900 mb-1">Family Bank Payment Required</h4>
+                    <p className="text-sm text-forest-800/70">Please complete payment before submitting your order:</p>
+                  </div>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-forest-800/60">Bank:</span>
+                    <span className="font-semibold text-forest-900">Family Bank</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-forest-800/60">Account Number:</span>
+                    <span className="font-semibold text-forest-900">065000014457</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-forest-800/60">Amount:</span>
+                    <span className="font-semibold text-gold-600">{option.price}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 sm:p-8 pt-0 space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Field name="full_name" label="Full name" icon={User} required />
+                <Field name="email" type="email" label="Email address" icon={Mail} required />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Field name="phone" label="Phone number" icon={Phone} required />
+                <Field name="county" label="County" icon={MapPin} required />
+              </div>
+              {type === 'physical' && (
+                <>
+                  <Field name="address" label="Delivery address" icon={MapPin} required />
+                  <Field name="quantity" type="number" label="Number of copies" icon={BookOpen} required />
+                </>
+              )}
+              {type === 'sponsor' && (
+                <>
+                  <Field name="sponsor_name" label="Name for the sponsored copy (optional)" icon={Heart} />
+                  <Field name="quantity" type="number" label="Number of copies to sponsor" icon={BookOpen} required />
+                </>
+              )}
+              <Field name="payer_name" label="Name of person who paid" icon={User} required />
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-forest-800/70 mb-2">Message (optional)</label>
+                <textarea name="message" rows={3} className="w-full px-4 py-3 rounded-xl border border-sand-300 bg-white text-sm text-forest-950 outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-200 resize-none" placeholder="Anything you'd like us to know..." />
+              </div>
+              {error && <p className="text-sm text-red-700 bg-red-50 rounded-xl px-4 py-3">{error}</p>}
+              <button type="submit" disabled={loading} className="btn-primary w-full disabled:opacity-60">{loading ? 'Submitting...' : option.cta} <ArrowRight className="w-4 h-4" /></button>
+              <p className="text-[11px] text-center text-forest-800/45">Your information is kept confidential and used only to process your request.</p>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function Field({ name, label, type = 'text', icon: Icon, required = false }: { name: string; label: string; type?: string; icon: typeof User; required?: boolean }) {
