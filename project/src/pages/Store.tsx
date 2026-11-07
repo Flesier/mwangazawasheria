@@ -135,6 +135,10 @@ function OrderModal({ type, submitted, onClose, onSubmitted }: { type: OrderType
                     <span className="font-semibold text-forest-900">Family Bank</span>
                   </div>
                   <div className="flex justify-between">
+                    <span className="text-forest-800/60">Paybill:</span>
+                    <span className="font-semibold text-forest-900">222111</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-forest-800/60">Account Number:</span>
                     <span className="font-semibold text-forest-900">065000014457</span>
                   </div>
