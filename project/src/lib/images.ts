@@ -26,7 +26,7 @@ export const IMAGES = {
   portraitMan: 'https://images.pexels.com/photos/6144028/pexels-photo-6144028.jpeg?auto=compress&cs=tinysrgb&w=900',
   portraitElder: 'https://images.pexels.com/photos/13981265/pexels-photo-13981265.jpeg?auto=compress&cs=tinysrgb&w=900',
   portraitTraditional: 'https://images.pexels.com/photos/35973053/pexels-photo-35973053.jpeg?auto=compress&cs=tinysrgb&w=900',
-  founderMusila: '/assets/images/about/musila.jpg',
+  founderMusila: '/assets/images/about/emusila.jpg',
   founderMomanyi: '/assets/images/about/momanyi.jpg',
   bookCovers: [
     '/assets/images/books/book1.jpeg',
